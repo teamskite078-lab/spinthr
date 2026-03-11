@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Spin THR Ramadhan 2026</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins;
+}
+
+body{
+height:100vh;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+color:white;
+overflow:hidden;
+background:linear-gradient(#07152e,#020b1f);
+text-align:center;
+}
+
+/* BACKGROUND */
+
+.ramadhan-bg{
+position:fixed;
+width:100%;
+height:100%;
+top:0;
+left:0;
+z-index:-1;
+overflow:hidden;
+}
+
+/* BULAN */
+
+.moon{
+position:absolute;
+top:80px;
+right:120px;
+width:120px;
+height:120px;
+background:#fff3b0;
+border-radius:50%;
+box-shadow:0 0 40px #fff3b0,0 0 80px rgba(255,243,176,0.6);
+animation:moonMove 10s ease-in-out infinite;
+}
+
+@keyframes moonMove{
+0%{transform:translateY(0)}
+50%{transform:translateY(-25px)}
+100%{transform:translateY(0)}
+}
+
+/* BINTANG */
+
+.star{
+position:absolute;
+width:3px;
+height:3px;
+background:white;
+border-radius:50%;
+animation:twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle{
+from{opacity:0.3}
+to{opacity:1}
+}
+
+/* LENTERA */
+
+.lantern{
+position:absolute;
+top:-40px;
+width:40px;
+height:60px;
+background:gold;
+border-radius:10px;
+box-shadow:0 0 20px gold;
+animation:swing 3s ease-in-out infinite;
+}
+
+.lantern:after{
+content:"";
+position:absolute;
+top:60px;
+left:50%;
+width:2px;
+height:40px;
+background:gold;
+transform:translateX(-50%);
+}
+
+@keyframes swing{
+0%{transform:rotate(-6deg)}
+50%{transform:rotate(6deg)}
+100%{transform:rotate(-6deg)}
+}
+
+.l1{left:10%}
+.l2{left:30%}
+.l3{left:50%}
+.l4{left:70%}
+.l5{left:90%}
+
+/* FORM */
+
+.form-box{
+margin-bottom:25px;
+display:flex;
+flex-direction:column;
+gap:10px;
+width:250px;
+}
+
+.form-box input{
+padding:12px;
+border:none;
+border-radius:10px;
+}
+
+.form-box button{
+padding:12px;
+border:none;
+border-radius:10px;
+background:gold;
+font-weight:bold;
+cursor:pointer;
+}
+
+/* WHEEL */
+
+#wheel{
+width:280px;
+height:280px;
+border-radius:50%;
+border:10px solid gold;
+
+box-shadow:
+0 0 30px gold,
+0 0 60px rgba(255,215,0,0.5);
+
+background:conic-gradient(
+#ff7675 0deg 60deg,
+#fdcb6e 60deg 120deg,
+#74b9ff 120deg 180deg,
+#55efc4 180deg 240deg,
+#a29bfe 240deg 300deg,
+#fd79a8 300deg 360deg
+);
+
+transition:transform 6s cubic-bezier(.17,.67,.25,1);
+}
+
+.pointer{
+width:0;
+height:0;
+border-left:20px solid transparent;
+border-right:20px solid transparent;
+border-bottom:35px solid gold;
+margin-bottom:-10px;
+}
+
+#spin{
+margin-top:20px;
+padding:14px 60px;
+border:none;
+border-radius:30px;
+background:linear-gradient(45deg,#ffd700,#ffb300);
+font-weight:bold;
+cursor:pointer;
+box-shadow:0 0 20px gold;
+}
+
+#result{
+margin-top:25px;
+font-size:28px;
+font-weight:bold;
+color:#00ffd0;
+}
+
+/* POPUP */
+
+.popup{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%) scale(0);
+background:#111;
+padding:40px;
+border-radius:20px;
+border:3px solid gold;
+font-size:40px;
+color:#ffd700;
+transition:0.4s;
+}
+
+.popup.show{
+transform:translate(-50%,-50%) scale(1);
+}
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+pointer-events:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="ramadhan-bg">
+
+<div class="moon"></div>
+
+<div class="lantern l1"></div>
+<div class="lantern l2"></div>
+<div class="lantern l3"></div>
+<div class="lantern l4"></div>
+<div class="lantern l5"></div>
+
+</div>
+
+<h1>🌙 SPIN THR RAMADHAN 2026</h1>
+
+<div class="form-box">
+
+<input type="text" id="nama" placeholder="Nama">
+<input type="number" id="wa" placeholder="Nomor WhatsApp">
+
+<button onclick="cekUser()">Mulai</button>
+
+</div>
+
+<div class="pointer"></div>
+
+<div id="wheel"></div>
+
+<button id="spin" disabled>SPIN</button>
+
+<div id="result"></div>
+
+<div class="popup" id="popup"></div>
+
+<canvas id="confetti"></canvas>
+
+<script>
+
+/* BINTANG RANDOM */
+
+for(let i=0;i<80;i++){
+
+let star=document.createElement("div")
+star.className="star"
+
+star.style.top=Math.random()*100+"%"
+star.style.left=Math.random()*100+"%"
+
+document.querySelector(".ramadhan-bg").appendChild(star)
+
+}
+
+const hadiah=[
+"Rp10.000",
+"Rp25.000",
+"Rp50.000",
+"Rp100.000",
+"ZONK 😅",
+"FREE SPIN 🔥"
+]
+
+const wheel=document.getElementById("wheel")
+const result=document.getElementById("result")
+const popup=document.getElementById("popup")
+
+function cekUser(){
+
+let nama=document.getElementById("nama").value
+let wa=document.getElementById("wa").value
+
+if(nama=="" || wa==""){
+alert("Isi nama dan WhatsApp dulu")
+return
+}
+
+if(localStorage.getItem("spin_"+wa)){
+
+alert("Nomor ini sudah pernah spin!")
+
+}else{
+
+localStorage.setItem("nama",nama)
+localStorage.setItem("wa",wa)
+
+document.getElementById("spin").disabled=false
+
+}
+
+}
+
+document.getElementById("spin").onclick=function(){
+
+let wa=localStorage.getItem("wa")
+
+if(localStorage.getItem("spin_"+wa)){
+alert("Sudah spin")
+return
+}
+
+let putaran=Math.floor(Math.random()*360)+2000
+
+wheel.style.transform="rotate("+putaran+"deg)"
+
+let index=Math.floor((360-(putaran%360))/60)%6
+
+setTimeout(()=>{
+
+let win=hadiah[index]
+
+result.innerHTML="🎉 Kamu mendapat "+win
+
+popup.innerHTML="🎁 "+win
+popup.classList.add("show")
+
+localStorage.setItem("spin_"+wa,win)
+
+confetti()
+
+},6000)
+
+}
+
+/* CONFETTI */
+
+function confetti(){
+
+const canvas=document.getElementById("confetti")
+const ctx=canvas.getContext("2d")
+
+canvas.width=window.innerWidth
+canvas.height=window.innerHeight
+
+let pieces=[]
+
+for(let i=0;i<200;i++){
+
+pieces.push({
+
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height-200,
+size:Math.random()*10+5,
+speed:Math.random()*3+2
+
+})
+
+}
+
+function update(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height)
+
+ctx.fillStyle="gold"
+
+pieces.forEach(p=>{
+
+p.y+=p.speed
+ctx.fillRect(p.x,p.y,p.size,p.size)
+
+})
+
+requestAnimationFrame(update)
+
+}
+
+update()
+
+}
+
+</script>
+
+</body>
+</html>
